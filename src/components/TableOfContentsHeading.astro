@@ -1,12 +1,12 @@
 ---
-import type { TocHeading } from "./TableOfContents.astro"; // <-- Corrected type import
-import Link from "./Link.astro"; // Assuming this component exists
+import type { TocHeading } from "../types";
+import Link from "./Link.astro";
 
 interface Props {
   heading: TocHeading;
 }
 
-const { heading } = Astro.props;
+const { heading } = Astro.props as Props;
 ---
 
 <li class="py-1">
@@ -14,9 +14,9 @@ const { heading } = Astro.props;
     {heading.text}
   </Link>
   {
-    heading.subheadings.length > 0 && (
+    heading.sub.length > 0 && (
       <ul class="ml-4 mt-1">
-        {heading.subheadings.map((subheading: TocHeading) => (
+        {heading.sub.map((subheading: TocHeading) => (
           <Astro.self heading={subheading} />
         ))}
       </ul>
