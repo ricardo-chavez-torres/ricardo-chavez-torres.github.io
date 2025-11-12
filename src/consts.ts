@@ -10,7 +10,7 @@ export const SITE: Site = {
   NUM_PROJECTS_ON_HOMEPAGE: 3,
 };
 
-export const HIGHLIGHTAUTHOR = "Ricardo C"
+export const HIGHLIGHTAUTHOR = "Ricardo Chávez Torres"
 
 export const HOME: Metadata = {
   TITLE: "Home",

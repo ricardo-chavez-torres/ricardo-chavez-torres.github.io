@@ -60,9 +60,11 @@ const authorsParts = splitStr(entry.data.authors, HIGHLIGHTAUTHOR);
           {webLink.url!="" && <a class="underline hover:text-cyan-500 text-orange-500 dark:hover:text-cyan-500 transition-colors duration-300 ease-in-out visited:text-indigo-400" target="_blank" href={webLink.url}>{webLink.text}</a>}
           {dataLink.url!="" && <a class="underline hover:text-cyan-500 text-orange-500 dark:hover:text-cyan-500 transition-colors duration-300 ease-in-out visited:text-indigo-400" target="_blank" href={dataLink.url}>{dataLink.text}</a>}
         </div>
-        <div class="text-sm">
-          In <div class="inline italic">{entry.data.pub}</div>
-        </div>
+        {(entry.data.pub ?? '').trim() !== '' && (
+          <div class="text-sm">
+            In <span class="inline italic">{entry.data.pub}</span>
+          </div>
+        )}
       </div>
       <p class="text-sm mt-2 break-words">
         {entry.data.description}
