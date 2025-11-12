@@ -29,11 +29,15 @@
   }
 }
 
+@import 'katex/dist/katex.min.css';
+/* @import 'https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css'; */
+
 @layer utilities {
   html {
     overflow-y: auto;
     color-scheme: light;
     scroll-padding-top: 100px;
+    font-size: 17px;
   }
 
   html.dark {
@@ -67,9 +71,25 @@
   }
 
   article {
-    @apply prose prose-neutral max-w-full dark:prose-invert prose-img:mx-auto prose-img:my-auto;
+    /* @apply prose prose-neutral max-w-3xl dark:prose-invert prose-img:mx-auto prose-img:my-auto; */
+    /* @apply prose prose-neutral max-w-4xl dark:prose-invert prose-img:mx-auto prose-img:my-auto; */
+    /* @apply prose prose-neutral max-w-6xl dark:prose-invert prose-img:mx-auto prose-img:my-auto; */
+    /* @apply prose prose-neutral max-w-7xl dark:prose-invert prose-img:mx-auto prose-img:my-auto; */
+    /* @apply prose prose-neutral max-w-full dark:prose-invert prose-img:mx-auto prose-img:my-auto; */
+
+    @apply prose prose-neutral dark:prose-invert prose-img:mx-auto prose-img:my-auto;
+    @apply max-w-3xl;
     @apply prose-headings:font-semibold;
     @apply prose-headings:text-black dark:prose-headings:text-white;
+  }
+
+  /* Ensure the article's prose uses the full container width (so the
+     article text lines up with the page title which lives outside the
+     prose wrapper). Some prose defaults set a narrower max-width; override
+     that here so article and title align. */
+  article.prose {
+    max-width: 100% !important;
+    width: 100% !important;
   }
 }
 
@@ -147,3 +167,248 @@ pre {
 .copy-code:active {
   @apply scale-90 transition-transform;
 }
+
+/* --- Sidenote / Distill Style --- */
+
+/* Hide the real checkbox */
+.sidenote-toggle {
+  display: none;
+}
+
+/* Style the '⊕' toggle */
+label.sidenote-toggle {
+  display: inline;
+  cursor: pointer;
+  vertical-align: super;
+  font-size: 0.75rem;
+  padding: 0 0.25rem;
+  color: theme(colors.blue.500);
+  user-select: none;
+}
+
+.sidenote {
+  display: none; /* Hide note by default */
+  position: relative;
+  background: theme(colors.neutral.100);
+  padding: 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid theme(colors.neutral.300);
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dark .sidenote {
+  background: theme(colors.neutral.800);
+  border-color: theme(colors.neutral.700);
+}
+
+/* This is the mobile-first "popup" style */
+input.sidenote-toggle:checked + .sidenote {
+  display: block;
+}
+
+/* This is the magic for wide screens (lg: 1024px)
+  It pulls the note into the margin.
+*/
+@media (min-width: 1024px) {
+  label.sidenote-toggle {
+    display: none; /* Hide the '⊕' on desktop */
+  }
+
+  .sidenote {
+    display: block;
+    position: absolute;
+    top: auto; /* Let the browser position it */
+    left: 105%; /* Push it just outside the article's 100% width */
+    width: 35ch; /* A good, readable width for a note */
+    
+    /* Reset mobile styles */
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.875rem; /* Make note text slightly smaller */
+    line-height: 1.5;
+  }
+
+  .dark .sidenote {
+    background: none;
+    border: none;
+  }
+}
+
+/* --- Left-side Sidenote --- */
+
+/* Hide the real checkbox for left sidenote */
+.sidenote-left-toggle {
+  display: none;
+}
+
+/* Style the '⊕' toggle for left sidenote (placed near the text but used to
+   reveal the left-side content on small screens) */
+label.sidenote-left-toggle {
+  display: inline;
+  cursor: pointer;
+  vertical-align: super;
+  font-size: 0.75rem;
+  padding: 0 0.25rem;
+  color: theme(colors.blue.500);
+  user-select: none;
+}
+
+.sidenote-left {
+  display: none; /* Hide by default on small screens */
+  position: relative;
+  background: theme(colors.neutral.100);
+  padding: 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid theme(colors.neutral.300);
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dark .sidenote-left {
+  background: theme(colors.neutral.800);
+  border-color: theme(colors.neutral.700);
+}
+
+/* Mobile-first: reveal when toggled */
+input.sidenote-left-toggle:checked + .sidenote-left {
+  display: block;
+}
+
+/* On wide screens, pull left sidenote into the left margin */
+@media (min-width: 1024px) {
+  /* Hide the inline toggle label on desktop */
+  label.sidenote-left-toggle {
+    display: none;
+  }
+
+  .sidenote-left {
+    display: block;
+    position: absolute;
+    top: auto;
+    /* Push it to the left of the article */
+    right: 105%;
+    width: 30ch;
+    /* Reset mobile styles */
+    border: none;
+    background: none;
+    padding: 0;
+    margin: -2.2rem 0 0 -2.5rem;
+    /* margin: 0rem 0 0 -2.5rem; */
+    font-size: 0.825rem;
+    line-height: 1.6;
+  }
+
+  .dark .sidenote-left {
+    background: none;
+    border: none;
+  }
+}
+
+/* --- Table of Contents Margin --- */
+
+.blog-post-wrapper {
+  @apply relative;
+}
+
+/* On large screens, position TOC in the left margin (outside the centered container) */
+@media (min-width: 1280px) {
+  /* Only show TOC on larger screens where there's enough margin space */
+  .blog-post-wrapper {
+    position: relative;
+  }
+
+  /* Position TOC in the left margin using viewport-relative positioning */
+  /* Container is centered: max-w-2xl (42rem) with px-3 (0.75rem padding each side) */
+  /* Container content area starts at: 50vw - 21rem - 0.75rem */
+  /* TOC should be to the left: subtract TOC width (280px = 17.5rem) and gap (2rem) */
+  .toc-sidebar {
+    /* Position the TOC inside the page flow container so it scrolls with the article
+       instead of remaining stuck to the viewport. We set top via script so the
+       TOC lines up with the article start. */
+    position: absolute;
+    /* Use viewport-relative positioning to align with centered container */
+    /* Container content starts at: 50vw - 24rem - 0.75rem */
+    /* Position TOC to the left with gap */
+    left: max(1rem, calc(50vw - 21rem - 0.75rem - 280px - 2rem));
+    width: 260px;
+    margin-bottom: 0;
+    /* top is set by script to align with article start */
+    z-index: 10;
+  }
+
+  /* Reset nav internal offsets — the TOC aside's `top` will be set via script
+     so we keep the nav content flush to the aside's top. */
+  .toc-sidebar nav {
+    position: relative;
+    top: 0;
+    padding-top: 11px;
+  }
+
+  /* Hide TOC on smaller screens where there's not enough space */
+  @media (max-width: 1279px) {
+    .toc-sidebar {
+      display: none;
+    }
+  }
+}
+
+/* Styling for TOC when placed inside a sidenote (LeftSidenote) */
+.sidenote-left nav ul,
+.sidenote-left nav ul li {
+  margin: 0;
+  padding: 0;
+  list-style: none !important;
+}
+
+.sidenote-left nav ul li::marker {
+  content: none;
+}
+
+.sidenote-left nav a {
+  text-decoration: none;
+  border-bottom: none;
+  color: inherit;
+  /* Slightly smaller line-height to tighten wrapped lines */
+  font-size: 0.8rem;
+  line-height: 1.0rem;
+  display: inline-block;
+}
+
+.sidenote-left nav a:hover,
+.sidenote-left nav a:focus {
+  /* Show underline on hover/focus for better affordance */
+  text-decoration: underline;
+  text-decoration-color: currentColor;
+  text-underline-offset: 2px;
+}
+
+/* Slightly reduce vertical gap between list items */
+.sidenote-left nav ul li {
+  margin-bottom: 0.125rem;
+}
+
+/* Make top-level TOC entries bold, nested (subsections) normal weight */
+.sidenote-left nav > ul > li > a {
+  font-weight: 600;
+}
+
+.sidenote-left nav ul ul a {
+  font-weight: 400;
+}
+
+/* Add indent only to nested lists (subsections) */
+.sidenote-left nav ul ul {
+  margin-left: 0.875rem; /* same as ml-4-ish */
+  margin-top: 0.25rem;
+}
+
+/* Ensure top-level list items are not indented */
+.sidenote-left nav > ul > li {
+  padding-left: 0;
+}
+
+/* Container stays at normal max-w-3xl and centered - no changes needed */
+/* Article stays centered within the container as normal */

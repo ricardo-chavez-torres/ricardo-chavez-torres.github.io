@@ -1,20 +1,22 @@
 ---
-import type { Heading } from "./TableOfContents.astro";
-import Link from "./Link.astro";
+import type { TocHeading } from "./TableOfContents.astro"; // <-- Corrected type import
+import Link from "./Link.astro"; // Assuming this component exists
 
-// https://kld.dev/building-table-of-contents/
+interface Props {
+  heading: TocHeading;
+}
 
 const { heading } = Astro.props;
 ---
 
-<li class="list-inside list-disc px-6 py-1.5 text-sm">
-  <Link href={"#" + heading.slug} underline>
+<li class="py-1">
+  <Link href={"#" + heading.slug}>
     {heading.text}
   </Link>
   {
     heading.subheadings.length > 0 && (
-      <ul class="translate-x-3">
-        {heading.subheadings.map((subheading: Heading) => (
+      <ul class="ml-4 mt-1">
+        {heading.subheadings.map((subheading: TocHeading) => (
           <Astro.self heading={subheading} />
         ))}
       </ul>

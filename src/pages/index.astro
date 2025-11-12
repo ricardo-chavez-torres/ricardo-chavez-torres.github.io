@@ -4,8 +4,10 @@ import Container from "@components/Container.astro";
 import { SITE, HOME, SOCIALS } from "@consts";
 import ArrowCard from "@components/ArrowCard.astro";
 import Link from "@components/Link.astro";
-import { getCollection } from "astro:content";
+import { dateRange } from "@lib/utils";
+import { getCollection, render } from "astro:content";
 import type { CollectionEntry } from "astro:content";
+import PublicationCard from "@components/PublicationCard.astro";
 
 const blog = (await getCollection("blog"))
   .filter((post) => !post.data.draft)
@@ -18,39 +20,44 @@ const projects: CollectionEntry<"projects">[] = (
   .filter((project) => !project.data.draft)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
+
+const publications: CollectionEntry<"publications">[] = (
+  await getCollection("publications")
+)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, SITE.NUM_PUBLICATIONS_ON_HOMEPAGE);
+
+const bioItems = (await getCollection("bio"))
+  .sort(
+    (a, b) =>
+      new Date(b.data.dateEnd).valueOf() - new Date(a.data.dateEnd).valueOf(),
+  )
+  .slice(0, SITE.NUM_BIO_ITEMS_ON_HOMEPAGE);
+
+const bio = await Promise.all(
+  bioItems.map(async (item) => {
+    const { Content } = await render(item);
+    return { ...item, Content };
+  }),
+);
 ---
 
 <Layout title={HOME.TITLE} description={HOME.DESCRIPTION}>
   <Container>
     <aside data-pagefind-ignore>
       <h1 class="font-semibold text-black dark:text-white">
-        Introducing Astro Micro 🔬
+        <!-- Introducing Astro Micro 🔬 -->
+        Welcome to my page!
       </h1>
       <div class="space-y-16">
         <section>
           <article class="space-y-4">
             <span>
               <p>
-                Astro Micro is an accessible theme for <Link
-                  href="https://astro.build/">Astro</Link
-                >. It's a fork of
-                <Link href="https://github.com/markhorn-dev">
-                  Mark Horn's
-                </Link> popular theme <Link
-                  href="https://astro.build/themes/details/astronano/"
-                  >Astro Nano</Link
-                >. Like Nano, Micro comes with zero frameworks installed.
-              </p>
-              <p>
-                Micro adds features like <Link href="https://pagefind.app/"
-                  >Pagefind</Link
-                > for search, <Link href="https://giscus.app">Giscus</Link> for comments,
-                and more. For a full list of changes, see this <Link
-                  href="/blog/00-micro-changelog">blog post</Link
-                >.
+                Enjoying math and machine learning.
               </p>
             </span>
-            <span class="animate">
+            <!-- <span class="animate">
               <p>
                 Micro still comes with everything great about Nano — full type
                 safety, a sitemap, an RSS feed, and Markdown + MDX support.
@@ -63,7 +70,7 @@ const projects: CollectionEntry<"projects">[] = (
                   Astro Micro on GitHub
                 </Link>
                 to fork the repository to get started.
-              </p>
+              </p> -->
             </span>
           </article>
         </section>
@@ -87,6 +94,49 @@ const projects: CollectionEntry<"projects">[] = (
         </section>
 
         <section class="animate space-y-6">
+          <div class="flex flex-wrap gap-y-2 items-center justify-between">
+            <h5 class="font-semibold text-black dark:text-white">Bio</h5>
+            <Link href="/bio"> See all </Link>
+          </div>
+          <ul class="flex flex-col space-y-4">
+            {
+              bio.map((entry) => (
+                <li>
+                  <div class="text-sm opacity-75">
+                    {dateRange(entry.data.dateStart, entry.data.dateEnd)}
+                  </div>
+                  <div class="font-semibold text-black dark:text-white">
+                    {entry.data.company}
+                  </div>
+                  <div class="text-sm opacity-75">{entry.data.role}</div>
+                  <article>
+                    <entry.Content />
+                  </article>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <section class="animate space-y-6">
+          <div class="flex flex-wrap items-center justify-between gap-y-2">
+            <h2 class="font-semibold text-black dark:text-white">
+              Recent research
+            </h2>
+            <Link href="/publications"> See all research </Link>
+          </div>
+          <ul class="not-prose flex flex-col gap-4">
+            {
+              publications.map((publication) => (
+                <li>
+                  <PublicationCard entry={publication} />
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+        
+        <!-- <section class="animate space-y-6">
           <div class="flex flex-wrap items-center justify-between gap-y-2">
             <h2 class="font-semibold text-black dark:text-white">
               Recent projects
@@ -102,7 +152,7 @@ const projects: CollectionEntry<"projects">[] = (
               ))
             }
           </ul>
-        </section>
+        </section> -->
 
         <section class="animate space-y-4">
           <h2 class="font-semibold text-black dark:text-white">

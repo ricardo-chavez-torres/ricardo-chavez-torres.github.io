@@ -1,43 +1,48 @@
 ---
-import TableOfContentsHeading from "./TableOfContentsHeading.astro";
+import LeftSidenote from "./LeftSidenote.astro";
 
-// https://kld.dev/building-table-of-contents/
-const { headings } = Astro.props;
-const toc = buildToc(headings);
+import type { MarkdownHeading } from "astro";
 
-export interface Heading {
-  depth: number;
-  slug: string;
+interface SimpleHeading {
   text: string;
+  slug: string;
+  depth: number;
+  sub: Array<{ text: string; slug: string }>;
 }
 
-function buildToc(headings: Heading[]) {
-  const toc: Heading[] = [];
-  const parentHeadings = new Map();
-  headings.forEach((h) => {
-    const heading = { ...h, subheadings: [] };
-    parentHeadings.set(heading.depth, heading);
-    if (heading.depth === 2) {
-      toc.push(heading);
-    } else {
-      parentHeadings.get(heading.depth - 1).subheadings.push(heading);
-    }
-  });
-  return toc;
+const { headings } = Astro.props as { headings: MarkdownHeading[] };
+
+// Build a very small nested structure (h2 -> h3).
+const toc: SimpleHeading[] = [];
+for (const h of headings || []) {
+  if (h.depth === 2) {
+    toc.push({ text: h.text, slug: h.slug, depth: 2, sub: [] });
+  } else if (h.depth === 3) {
+    const last = toc[toc.length - 1];
+    if (last) last.sub.push({ text: h.text, slug: h.slug });
+    else toc.push({ text: h.text, slug: h.slug, depth: 3, sub: [] });
+  }
 }
 ---
 
-<details
-  open
-  class="animate group rounded-lg border border-black/15 dark:border-white/20"
->
-  <summary
-    class="cursor-pointer rounded-t-lg px-3 py-1.5 font-medium transition-colors group-open:bg-black/5 hover:bg-black/5 dark:group-open:bg-white/5 hover:dark:bg-white/5"
-    >Table of Contents</summary
-  >
-  <nav>
-    <ul class="py-3">
-      {toc.map((heading) => <TableOfContentsHeading heading={heading} />)}
+<LeftSidenote>
+  <nav aria-label="Table of contents">
+    <h2>Contents</h2>
+    <ul>
+      {toc.map((h) => (
+        <li>
+          <a href={'#' + h.slug}>{h.text}</a>
+          {h.sub.length > 0 && (
+            <ul>
+              {h.sub.map((s) => (
+                <li>
+                  <a href={'#' + s.slug}>{s.text}</a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))}
     </ul>
   </nav>
-</details>
+</LeftSidenote>

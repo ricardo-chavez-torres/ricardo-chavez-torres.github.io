@@ -1,0 +1,12 @@
+---
+/* This creates a unique ID for the checkbox and label,
+  so multiple sidenotes on a page don't trigger each other.
+*/
+const id = `sidenote-left-${Math.random().toString(36).substring(2, 9)}`;
+---
+
+<label for={id} class="sidenote-left-toggle">⊕</label>
+<input type="checkbox" id={id} class="sidenote-left-toggle" />
+<aside class="sidenote-left">
+  <slot />
+</aside>

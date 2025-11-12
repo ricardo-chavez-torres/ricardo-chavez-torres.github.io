@@ -47,6 +47,21 @@ export const SITE: Site = {
   NUM_PROJECTS_ON_HOMEPAGE: 3,
 };
 ```
+$4+5$
+hola
+$$4+5$$
+
+\begin{align} 
+f(x) &= 78$$ \\
+a&=11232178491654891256712954126
+\end{align}
+
+$$
+\begin{aligned}
+a &= b + c \\
+x &= y + z
+\end{aligned}
+$$
 
 | Field        | Req | Description                                          |
 | :----------- | :-- | :--------------------------------------------------- |
